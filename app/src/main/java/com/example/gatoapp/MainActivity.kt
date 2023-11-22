@@ -47,7 +47,8 @@ class MainActivity : ComponentActivity() {
                     println(lista[0].fecha)
                     LazyColumn(){
                         items(lista){gato ->
-                            perfilGato(ArrayList<Gato>())
+                            var nombre = gato.nombre
+                            perfilGato(nombre)
                         }
                     }
 
@@ -65,7 +66,7 @@ class MainActivity : ComponentActivity() {
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun perfilGato(datosGato: ArrayList<Gato>) {
+fun perfilGato(nombre:String) {
 
     Row(modifier = Modifier
         .fillMaxWidth()
