@@ -11,9 +11,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -25,6 +28,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.gatoapp.DatosAlmacenados.DatosGatoArray
+import com.example.gatoapp.DatosAlmacenados.Gato
+import com.example.gatoapp.DatosAlmacenados.lista
 import com.example.gatoapp.ui.theme.GatoAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -37,8 +43,14 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    perfilGato()
-                    perfilGato()
+                    DatosGatoArray().rellenarlista()
+                    println(lista[0].fecha)
+                    LazyColumn(){
+                        items(lista){gato ->
+                            perfilGato(ArrayList<Gato>())
+                        }
+                    }
+
                 }
             }
         }
@@ -53,15 +65,23 @@ class MainActivity : ComponentActivity() {
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun perfilGato() {
-    Row(modifier = Modifier.fillMaxWidth().padding(6.dp).background(Color.LightGray)){
+fun perfilGato(datosGato: ArrayList<Gato>) {
+
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .padding(6.dp)
+        .background(Color.LightGray)){
         Image(
-            painter = painterResource(id = R.drawable.quicksilver),
+            painter = painterResource(id = datosGato[0].imagen),
             contentDescription = "GATOPERFIL",
             modifier = Modifier.size(80.dp)
             )
     // 1 - Crear data class Gato
-        // 2 - laz
+        // Datepicker info:
+        //https://semicolonspace.com/jetpack-compose-date-picker-material3/
+        //formato fecha:
+        //https://www.baeldung.com/java-simple-date-format
+
 
         Column(modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.Start) {
@@ -75,10 +95,12 @@ fun perfilGato() {
                 horizontalArrangement = Arrangement.SpaceAround) {
                 Text(text = "Tranquilo")
                 Text(text = "Gris")
-                Text(text = "Pelota")
             }
-            Text(text = "12/12/12")
+            Row(modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceAround) {
+                Text(text = "Pelota")
+                Text(text = "12/12/12")
+            }
         }
     }
-
 }
