@@ -32,6 +32,7 @@ import com.example.gatoapp.DatosAlmacenados.DatosGatoArray
 import com.example.gatoapp.DatosAlmacenados.Gato
 import com.example.gatoapp.DatosAlmacenados.lista
 import com.example.gatoapp.ui.theme.GatoAppTheme
+import java.util.Date
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,8 +48,14 @@ class MainActivity : ComponentActivity() {
                     println(lista[0].fecha)
                     LazyColumn(){
                         items(lista){gato ->
-                            var nombre = gato.nombre
-                            perfilGato(nombre)
+                            val nombre = gato.nombre
+                            val imagen = gato.imagen
+                            val nivel = gato.nivel
+                            val personalidad = gato.personalidad
+                            val color = gato.color
+                            val juguete = gato.juguete
+                            val fecha = gato.fecha
+                            PerfilGato(nombre, imagen, nivel, personalidad, color, juguete, fecha)
                         }
                     }
 
@@ -64,16 +71,22 @@ class MainActivity : ComponentActivity() {
 
 
 
-@Preview(showBackground = true, showSystemUi = true)
+
 @Composable
-fun perfilGato(nombre:String) {
+fun PerfilGato(nombre:String,
+               imagen:Int,
+               nivel:String,
+               personalidad :String,
+               color :String,
+               juguete :String,
+               fecha :Date) {
 
     Row(modifier = Modifier
         .fillMaxWidth()
         .padding(6.dp)
         .background(Color.LightGray)){
         Image(
-            painter = painterResource(id = datosGato[0].imagen),
+            painter = painterResource(id = imagen),
             contentDescription = "GATOPERFIL",
             modifier = Modifier.size(80.dp)
             )
@@ -89,18 +102,18 @@ fun perfilGato(nombre:String) {
             Row (modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
                 ){
-                Text(text = "Gato")
-                Text(text = "Nivel 28")
+                Text(text = nombre)
+                Text(text = "Nivel: $nivel")
             }
             Row(modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceAround) {
-                Text(text = "Tranquilo")
-                Text(text = "Gris")
+                Text(text = "Personalidad: $personalidad")
+                Text(text = "Pelaje: $color")
             }
             Row(modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceAround) {
-                Text(text = "Pelota")
-                Text(text = "12/12/12")
+                Text(text = "Juguete: $juguete")
+                Text(text = "Fecha: $fecha")
             }
         }
     }
