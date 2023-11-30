@@ -45,7 +45,6 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     DatosGatoArray().rellenarlista()
-                    println(lista[0].fecha)
                     LazyColumn(){
                         items(lista){gato ->
                             val nombre = gato.nombre
@@ -79,7 +78,7 @@ fun PerfilGato(nombre:String,
                personalidad :String,
                color :String,
                juguete :String,
-               fecha :Date) {
+               fecha : String) {
 
     Row(modifier = Modifier
         .fillMaxWidth()
