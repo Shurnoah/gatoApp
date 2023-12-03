@@ -9,9 +9,9 @@ import androidx.navigation.navArgument
 import com.example.gatoapp.BarraBusqueda
 import com.example.gatoapp.DatosAlmacenados.Formulario.formulario
 import com.example.gatoapp.PantallaPrincipal.PantallaMenu
-import com.example.gatoapp.detalleGato
+import com.example.gatoapp.DetalleGato
 import com.example.gatoapp.modelo.Rutas
-import com.example.gatoapp.pantallaborrado
+import com.example.gatoapp.Pantallaborrado
 
 @Composable
 fun GrafoNavegacion() {
@@ -33,14 +33,14 @@ fun GrafoNavegacion() {
                 navArgument("nombre") { type = NavType.StringType },
             )
         ) { backstackEntry ->
-            detalleGato(nombre = backstackEntry.arguments?.getString("nombre"))
+            DetalleGato(nombre = backstackEntry.arguments?.getString("nombre"))
         }
 
         composable("agregar") {
             formulario()
         }
         composable("borrar") {
-            pantallaborrado()
+            Pantallaborrado()
         }
 
     }
