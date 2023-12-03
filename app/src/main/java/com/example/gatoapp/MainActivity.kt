@@ -27,6 +27,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -51,12 +52,23 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.SearchBar
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.gatoapp.BarraBusqueda.SearchViewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavHost
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.gatoapp.DatosAlmacenados.DatosGatoArray
+import com.example.gatoapp.DatosAlmacenados.Detalle
+import com.example.gatoapp.DatosAlmacenados.DetallesGatoArray
 import com.example.gatoapp.DatosAlmacenados.Gato
+import com.example.gatoapp.DatosAlmacenados.detalle
 import com.example.gatoapp.DatosAlmacenados.lista
+import com.example.gatoapp.modelo.Rutas
+import com.example.gatoapp.navegacion.GrafoNavegacion
 import com.example.gatoapp.ui.theme.GatoAppTheme
 import java.util.Date
 
@@ -71,51 +83,25 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     DatosGatoArray().rellenarlista()
-                    Column(Modifier.fillMaxSize()) {
-
-                        BarraBusqueda() //meter en un boton??
-                        LazyColumn() {
-                            items(lista) { gato ->
-                                val nombre = gato.nombre
-                                val imagen = gato.imagen
-                                val nivel = gato.nivel
-                                val personalidad = gato.personalidad
-                                val color = gato.color
-                                val juguete = gato.juguete
-                                val fecha = gato.fecha
-                                PerfilGato(
-                                    nombre,
-                                    imagen,
-                                    nivel,
-                                    personalidad,
-                                    color,
-                                    juguete,
-                                    fecha
-                                )
-                            }
-                        }
-                    }
+                    DetallesGatoArray().rellenarDetalles()
+                    GrafoNavegacion()
                 }
             }
         }
     }
 }
 
-// List<Gato> lista;
-// LazyColumn()
-//
+
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BarraBusqueda() {
+fun BarraBusqueda(navController: NavController) {
     var text by remember { mutableStateOf("") }
     var active by remember { mutableStateOf(false) }
-    var items = remember { mutableListOf(lista) }
     Scaffold {
         SearchBar(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(150.dp),
+                .fillMaxWidth(),
             query = text,
             onQueryChange = { text = it },
             onSearch = { active = false },
@@ -143,62 +129,67 @@ fun BarraBusqueda() {
 
         ) {
             if (text.isNotEmpty()) {
-                val filtrado = lista.filter { gato -> gato.color.contains(text) }
+                val filtrado = lista.filter { Gato -> Gato.color.contains(text) }
                 LazyColumn() {
                     items(filtrado) { Gato ->
+                        var gatonombre by remember { mutableStateOf("") }
                         Card {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(6.dp)
-                                    .background(Color.LightGray)
-                            ) {
-                                Image(
-                                    painter = painterResource(id = Gato.imagen),
-                                    contentDescription = "GATOPERFIL",
-                                    modifier = Modifier.size(80.dp)
-                                )
-                                Column(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalAlignment = Alignment.Start
+                            Button(onClick = {
+                                gatonombre = Gato.nombre
+                                navController.navigate(route = "detalle/$gatonombre")
+                            }) {
+                                Row(
+                                    modifier = Modifier
+                                        .height(120.dp)
+                                        .fillMaxWidth()
+                                        .padding(6.dp)
                                 ) {
-                                    Row(
+                                    Image(
+                                        painter = painterResource(id = Gato.imagen),
+                                        contentDescription = "GATOPERFIL",
+                                        modifier = Modifier.size(80.dp)
+                                    )
+                                    Column(
                                         modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween
+                                        horizontalAlignment = Alignment.Start
                                     ) {
-                                        Text(text = Gato.nombre)
-                                        Text(text = "Nivel: ${Gato.nivel}")
-                                    }
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceAround
-                                    ) {
-                                        Text(text = "Personalidad: ${Gato.personalidad}")
-                                        Text(text = "Pelaje: ${Gato.color}")
-                                    }
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceAround
-                                    ) {
-                                        Text(text = "Juguete: ${Gato.juguete}")
-                                        Text(text = "Fecha: ${Gato.fecha}")
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween
+                                        ) {
+                                            Text(text = Gato.nombre)
+                                            Text(text = " Nivel: ${Gato.nivel}")
+                                        }
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceAround
+                                        ) {
+                                            Text(text = " Personalidad: ${Gato.personalidad}")
+                                            Text(text = " Pelaje: ${Gato.color}")
+                                        }
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceAround
+                                        ) {
+                                            Text(text = " Juguete: ${Gato.juguete}")
+                                            Text(text = " Fecha: ${Gato.fecha}")
+                                        }
                                     }
                                 }
                             }
                         }
-
                     }
+
                 }
             } else {
-                lista.forEach {
-                        Gato ->
+                lista.forEach { Gato ->
                     Row(modifier = Modifier.padding(all = 14.dp)) {
                         Icon(
                             modifier = Modifier.padding(end = 16.dp),
                             imageVector = Icons.Default.Refresh,
                             contentDescription = "History Icon"
                         )
-                        Text(text = "${Gato.color}")
+                        Text(text = Gato.color)
                     }
                 }
             }
@@ -208,55 +199,6 @@ fun BarraBusqueda() {
 }
 
 
-@Composable
-fun Buscador() {
-    val viewModel = viewModel<SearchViewModel>()
-    val searchText by viewModel.searchQuery.collectAsState()
-    val gatos by viewModel.gatos.collectAsState()
-    val isSearching by viewModel.isSearching.collectAsState()
-    Column(
-        Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        TextField(
-            value = searchText,
-            onValueChange = viewModel::onSearchTextChange,
-            modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text(text = "Search") }
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        //esto es una animacion de carga, que realmente no sirve para nada
-        if (isSearching) {
-            Box(modifier = Modifier.fillMaxSize()) {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
-                )
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            ) {
-                items(gatos) { gatos ->
-                    Text(
-                        text = gatos.color,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 16.dp)
-                    )
-                }
-            }
-        }
-    }
-}
-
-// 1 - Crear data class Gato
-// Datepicker info:
-//https://semicolonspace.com/jetpack-compose-date-picker-material3/
-//formato fecha:
-//https://www.baeldung.com/java-simple-date-format
 @Composable
 fun PerfilGato(
     nombre: String,
@@ -265,46 +207,89 @@ fun PerfilGato(
     personalidad: String,
     color: String,
     juguete: String,
-    fecha: String
+    fecha: String,
+    navController: NavController
 ) {
+    var gatonombre by remember { mutableStateOf("") }
     Card {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(6.dp)
-                .background(Color.LightGray)
-        ) {
-            Image(
-                painter = painterResource(id = imagen),
-                contentDescription = "GATOPERFIL",
-                modifier = Modifier.size(80.dp)
-            )
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.Start
+        Button(onClick = {
+            gatonombre = nombre
+            navController.navigate(route = "detalle/$gatonombre")
+        }) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(6.dp)
             ) {
-                Row(
+                Image(
+                    painter = painterResource(id = imagen),
+                    contentDescription = "GATOPERFIL",
+                    modifier = Modifier.size(80.dp)
+                )
+                Column(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalAlignment = Alignment.Start
                 ) {
-                    Text(text = nombre)
-                    Text(text = "Nivel: $nivel")
-                }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
-                    Text(text = "Personalidad: $personalidad")
-                    Text(text = "Pelaje: $color")
-                }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
-                    Text(text = "Juguete: $juguete")
-                    Text(text = "Fecha: $fecha")
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(text = nombre)
+                        Text(text = "Nivel: $nivel")
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        Text(text = "Personalidad: $personalidad")
+                        Text(text = "Pelaje: $color")
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        Text(text = "Juguete: $juguete")
+                        Text(text = "Fecha: $fecha")
+                    }
                 }
             }
         }
     }
 }
+
+@Composable
+fun detalleGato(nombre: String?) {
+    if (nombre.isNullOrEmpty()) {
+        Text(text = "No hay gato para mostrar")
+    } else {
+        val detallegato = detalle.first() { Detalle -> Detalle.nombre.contains(nombre) }
+        Column(modifier = Modifier
+            .fillMaxSize().padding(2.dp)) {
+            Text(text = detallegato.nombre,
+                fontSize = 40.sp)
+            Image(
+                painter = painterResource(id = detallegato.imagen),
+                contentDescription = "GATOPERFIL",
+                modifier = Modifier.size(200.dp)
+            )
+            Text(text = detallegato.Texto)
+        }
+
+    }
+}
+
+    @Composable
+    fun pantallaborrado(){
+        Column (modifier = Modifier
+            .fillMaxSize(),
+            Arrangement.Center,
+            Alignment.CenterHorizontally){
+            Text(text = "¯\\_ (ツ)_/¯",
+                fontSize = 80.sp)
+            Text(text = "sorry...",
+                fontSize = 10.sp)
+        }
+
+    }
+
+

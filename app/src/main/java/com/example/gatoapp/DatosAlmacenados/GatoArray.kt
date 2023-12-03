@@ -8,19 +8,4 @@ data class Gato(
         var color:String,
         var juguete:String,
         var fecha: String
-    ) {
-    fun doesMatchSearchQuery(query: String):Boolean{
-        val matchingCombinations = listOf( //distintos filtros de busqueda
-            nombre,
-            personalidad,
-            color,
-            "$color $color",
-            "$color y $color",
-            juguete,
-            fecha
-        )
-        return matchingCombinations.any {
-            it.contains(query,ignoreCase = true) //aceptar cuando coincide a medias
-        }
-    }
-}
+    )
